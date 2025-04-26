@@ -84,6 +84,33 @@
   setInterval(bougerBateaux, 10000); // Toutes les 10 secondes
 
 </script>
+  
+<script>
+  // ID de ta Google Sheet (remplace "TON_ID_DE_FEUILLE_ICI" par ton ID)
+  const sheetID = '1nznZmGFQe7_flLNXzdKRyMGlqrkiv44y9rtkmSBQlY0';
+
+  // URL publique pour récupérer les données de la feuille
+  const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+
+  fetch(url)
+    .then(res => res.text())
+    .then(rep => {
+      // Nettoyer les données JSON
+      const jsonData = JSON.parse(rep.substr(47).slice(0, -2));
+      const rows = jsonData.table.rows;
+
+      rows.forEach(row => {
+        const nom = row.c[0].v; // Nom du bateau
+        const lat = parseFloat(row.c[1].v); // Latitude
+        const lon = parseFloat(row.c[2].v); // Longitude
+
+        // Créer un marqueur Leaflet avec les données
+        const marker = L.marker([lat, lon]).addTo(map);
+        marker.bindPopup(`<b>${nom}</b><br>Lat: ${lat}<br>Lon: ${lon}`);
+      });
+    })
+    .catch(err => console.error('Erreur chargement Google Sheets:', err));
+</script>
 
 </body>
 </html>
