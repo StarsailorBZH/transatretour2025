@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Suivi Bateaux en Mouvement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; width: 100vw; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Initialiser la carte
+  var map = L.map('map').setView([48.8584, 2.2945], 4);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Liste des bateaux
+  var bateaux = [
+    { nom: "Bateau 1", lat: 48.8584, lon: 2.2945 },
+    { nom: "Bateau 2", lat: 43.2965, lon: 5.3698 },
+    { nom: "Bateau 3", lat: 45.7640, lon: 4.8357 },
+  ];
+
+  // Dictionnaire pour stocker les marqueurs
+  var marqueurs = {};
+
+  // Fonction pour ajouter les marqueurs
+  function afficherBateaux() {
+    bateaux.forEach(function(bateau) {
+      var marker = L.marker([bateau.lat, bateau.lon]).addTo(map);
+      marker.bindPopup("<b>" + bateau.nom + "</b><br>Latitude: " + bateau.lat.toFixed(4) + "<br>Longitude: " + bateau.lon.toFixed(4));
+      marqueurs[bateau.nom] = marker;
+    });
+  }
+
+  // Fonction pour simuler un mouvement aléatoire
+  function bougerBateaux() {
+    bateaux.forEach(function(bateau) {
+      // Déplacement aléatoire léger
+      var variationLat = (Math.random() - 0.5) * 0.02;  // +/- 0.01 degrés
+      var variationLon = (Math.random() - 0.5) * 0.02;
+      bateau.lat += variationLat;
+      bateau.lon += variationLon;
+
+      // Mise à jour du marqueur
+      var marker = marqueurs[bateau.nom];
+      if (marker) {
+        marker.setLatLng([bateau.lat, bateau.lon]);
+        marker.setPopupContent("<b>" + bateau.nom + "</b><br>Latitude: " + bateau.lat.toFixed(4) + "<br>Longitude: " + bateau.lon.toFixed(4));
+      }
+    });
+  }
+
+  // Afficher initialement les bateaux
+  afficherBateaux();
+
+  // Bouger les bateaux toutes les 10 secondes
+  setInterval(bougerBateaux, 10000);
+
+</script>
+
+</body>
+</html>
